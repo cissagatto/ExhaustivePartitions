@@ -14,35 +14,20 @@ This source code consists of a R project for R Studio and the following R script
 ## Folder Structure
 
 ExhaustivePartitions
-
---BellPartitions
-
+->BellPartitions
   ----[dataset_1]
-
   ----[dataset_2]
-
   ----[dataset_n]
-
--- datasets
-
+-->datasets
   ---- folds
-
-    ------ [dataset_1]
-        
-        ------ CrossValidation    
-        
-          ------ Tr        
-          
+    ------ [dataset_1]        
+        ------ CrossValidation            
+          ------ Tr                  
           ------ Ts        
-
         ------ NamesLabels
-
   ---- originals
-
 -- R
-
 -- results
-
 -- utils
 
 ## Important
