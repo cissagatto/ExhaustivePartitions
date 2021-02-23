@@ -141,22 +141,6 @@ setwd(Folder)
 str0 = paste("rm -r ", Folder)
 system(str0)
 
-##################################################################################################
-# Google Drive Config
-##################################################################################################
-#options(gargle_oauth_email = "elainegatto@estudante.ufscar.br")
-#library("googledrive")
-#drive_auth(path = "/home/elaine/ExhaustivePartitions/gd.json")
-#drive_auth(email = "elainegatto@estudante.ufscar.br")
-#drive_user()
-#drive_auth_configure(path = "/home/elaine/ExhaustivePartitions/gd.json")
-
-cat("\nsalva no google drive")
-str4a <- paste(Folder, "/", dataset_name,  "-Partition-", id_part, "-results.tar.gz", sep="")
-print(str4a)
-GoogleDrive = "https://drive.google.com/drive/u/1/folders/1AShNBr835e-mVQ7pwiGJrvlE7v2mmgSN/"
-drive_upload(str4a, GoogleDrive)
-
 cat("\n##################################################################################################")
 cat("\n# END OF Exhaustive PARTITIONS. Thanks God!                                                       #") 
 cat("\n##################################################################################################")
