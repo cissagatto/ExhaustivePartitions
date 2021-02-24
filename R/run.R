@@ -26,11 +26,6 @@
 ##################################################################################################
 options(java.parameters = "-Xmx16g")
 
-
-
-##################################################################################################
-# Configures the workspace according to the operating system                                     #
-##################################################################################################
 ##################################################################################################
 # Configures the workspace according to the operating system                                     #
 ##################################################################################################
@@ -48,35 +43,24 @@ FolderScripts = paste(FolderRoot, "/R/", sep="")
 
 
 ##################################################################################################
-# LOAD INTERNAL LIBRARIES                                                                        #
+# LOAD LIBRARIES                                                                                 #
 ##################################################################################################
 FolderScripts = paste(FolderRoot, "/R/", sep="")
 setwd(FolderScripts)
 
 cat("\nLoad Sources")
-
-cat("\n\tlibraries.R")
 setwd(FolderScripts)
 source("libraries.R")
-
-cat("\n\tutils.R")
 setwd(FolderScripts)
 source("utils.R")
-
-cat("\n\tbuildAndTestPartitions.R")
 setwd(FolderScripts)
 source("buildAndTestPartitions.R")
-
-cat("\n\tevaluation.R")
 setwd(FolderScripts)
 source("evaluation.R")
-
-
 
 ##################################################################################################
 # Opens the file "datasets.csv"                                                                  #
 ##################################################################################################
-#cat("\nOpen Dataset Infomation File\n")
 diretorios = directories()
 setwd(FolderRoot)
 datasets = data.frame(read.csv("datasets.csv"))
@@ -86,12 +70,16 @@ n = nrow(datasets)
 ##################################################################################################
 # n_dataset: number of the dataset in the "datasets.csv"                                         #
 # number_cores: number of cores to paralell                                                      #
-# number_folds: number of folds for cross validation                                             # 
+# number_folds: number of folds for cross validation                                             #
+# id_part: partition number                                                                      #
 ##################################################################################################
 exhaustivePartitions <- function(number_dataset, number_cores, number_folds, id_part){
   
+  # set the cores for paralel
   if(number_cores == 0){
+    cat("\n\n################################################################################################")
     cat("\nZero is a disallowed value for number_cores. Please choose a value greater than or equal to 1.")
+    cat("\n##################################################################################################\n\n") 
   } else {
     cl <- parallel::makeCluster(number_cores)
     doParallel::registerDoParallel(cl)
@@ -121,46 +109,31 @@ exhaustivePartitions <- function(number_dataset, number_cores, number_folds, id_
   cat("\n# RUN: Generate folders                                                                           #")
   timeFolders = system.time(folders <- directoriesDataset(dataset_name)) 
   
-  # C:\Users\elain\ExhaustivePartitions\datasets\folds\emotions\NamesLabels
+  # get the names labels
   folder = paste(diretorios$folderFolds, "/", dataset_name, "/NamesLabels", sep="")
   setwd(folder)
   arquivo = paste(dataset_name, "-NamesLabels.csv", sep="")
   namesLabels = data.frame(read.csv(arquivo))
   namesLabels = c(namesLabels$x)
   
+  # get the bell partitions information
   info <- infoPartitions(id_part, dataset_name, folders$folderExhaustive)
   
   cat("\n# RUN: Build and Test Bell Partitions                                                            #")
   timeComPart = system.time(resPart <- partition(id_part, ds, dataset_name, number_folds, 
               namesLabels, folders$folderExhaustive, folders$folderCVTR,folders$folderCVTS)) 
   
-  #setwd(folders$folderExhaustive)
-  #name2 = paste(dataset_name, "-partition.RData", sep="")
-  #save(resPart, file = name2)
-  
   cat("\n# RUN: Matrix Correlation                                                                        #")
   timeGather = system.time(resGather <- gather(id_part, ds, dataset_name, number_folds, 
                                                    namesLabels, folders$folderExhaustive)) 
-  
-  #setwd(folders$folderExhaustive)
-  #name4 = paste(dataset_name, "-gather.RData", sep="")
-  #save(resGather, file = name4)
   
   cat("\n# Run: Evaluation Fold                                                                            #")
   timeEval = system.time(resEval <- eval(id_part, ds, dataset_name, number_folds, 
                                                namesLabels, folders$folderExhaustive)) 
   
-  #setwd(folders$folderExhaustive)
-  #name6 = paste(dataset_name, "-eval.RData", sep="")
-  #save(resEval, file = name6)
-  
   cat("\n# Run: Gather Evaluation                                                                          #")
   timeGE = system.time(resGE <- gatherEvaluation(id_part, ds, dataset_name, number_folds, 
                                     namesLabels, folders$folderExhaustive)) 
-  
-  #setwd(folders$folderExhaustive)
-  #name8 = paste(dataset_name, "-eval.RData", sep="")
-  #save(resGather, file = name6)
   
   cat("\n# Run: Save Runtime                                                                               #")
   Runtime = rbind(timeComPart, timeGather, timeEval, timeGE)
