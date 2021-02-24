@@ -92,8 +92,9 @@ number_folds <- as.numeric(args[3])
 
 ##################################################################################################
 # Get the number of partition                                                                    #
+# IF you make a LOOP, please, comment this line, because the id_part will past from loop         #
 ##################################################################################################
-#id_part=2 <- as.numeric(args[4])
+id_part <- as.numeric(args[4])
 
 
 ##################################################################################################
@@ -116,64 +117,50 @@ n = nrow(bell)
 ##################################################################################################
 # EXECUTE                                                                                        # 
 ##################################################################################################
+cat("\nPARTITION: ", id_part, "\n")
 
-id_part = 2
-while(id_part<=n){
+timeEP = system.time(res <- exhaustivePartitions(number_dataset, number_cores, number_folds, id_part))
+cat("\n")
+
+# Pasta para salvar resultados
+Folder <- paste(diretorios$folderResults, "/", dataset_name, "/Exhaustive/Partition-",id_part, sep="")
+setwd(Folder)
+
+# salva no servidor
+str1a <- paste(dataset_name, "-Partition-", id_part, "-RunTimeFinal.rds", sep="")
+print(str1a)
+cat("\n Save RDATA")
+save(res, file = str1a)
+
+str2a = paste(dataset_name, "-Partition-", id_part, "-Results.rds", sep="")
+print(str2a)
+cat("\n Save RDS")
+save(res, file = str2a)
   
-  cat("\nPARTITION: ", id_part, "\n")
+cat("\n Compress folders and files")
+str3a <- paste("tar -zcvf ", dataset_name, "-Partition-", id_part, "-results.tar.gz " , Folder, sep="")
+print(str3a)
+system(str3a)
+
+cat("\n Copy to folder Results")
+str5a = paste("cp ", Folder, "/", dataset_name, "-Partition-", id_part, "-results.tar.gz " , diretorios$folderResults, sep="")
+system(str5a)
   
-  timeEP = system.time(res <- exhaustivePartitions(number_dataset, number_cores, number_folds, id_part))
-  cat("\n")
-  
-  # Pasta para salvar resultados
-  Folder <- paste(diretorios$folderResults, "/", dataset_name, "/Exhaustive/Partition-",id_part, sep="")
-  setwd(Folder)
-  
-  # salva no servidor
-  str1a <- paste(dataset_name, "-Partition-", id_part, "-RunTimeFinal.rds", sep="")
-  print(str1a)
-  cat("\n Save RDATA")
-  save(res, file = str1a)
-  
-  str2a = paste(dataset_name, "-Partition-", id_part, "-Results.rds", sep="")
-  print(str2a)
-  cat("\n Save RDS")
-  save(res, file = str2a)
-  
-  cat("\n Compress folders and files")
-  str3a <- paste("tar -zcvf ", dataset_name, "-Partition-", id_part, "-results.tar.gz " , Folder, sep="")
-  print(str3a)
-  system(str3a)
-  
-  cat("\n Copy to folder Results")
-  str5a = paste("cp ", Folder, "/", dataset_name, "-Partition-", id_part, "-results.tar.gz " , diretorios$folderResults, sep="")
-  system(str5a)
-  
-  cat("\n Copy to google drive")
-  origem = paste(diretorios$folderResults, "/", dataset_name, "-Partition-", id_part, "-results.tar.gz", sep="")
-  cat("\nFROM: ", origem)
-  
-  #destino = paste("cloud:Exhaustive/Results/", dataset_name, sep="")
-  #cat("\nTO", destino)
-  
-  comando = paste("rclone copy ", origem, " cloud:Exhaustive/Results", sep="")
-  cat("\n", comando)
-  
-  system(comando)
-  
-  cat("\n Delete")
-  setwd(Folder)
-  str3 = paste("rm -r ", Folder)
-  system(str3)
-  
-  setwd(diretorios$folderResults)
-  unlink(paste(dataset_name, "-Partition-", id_part, "-results.tar.gz", sep=""),  recursive = TRUE)
-  
-  id_part = id_part + 1
-  
-  cat("\n")
-  gc()
-}
+#cat("\n Copy to google drive")
+#origem = paste(diretorios$folderResults, "/", dataset_name, "-Partition-", id_part, "-results.tar.gz", sep="")
+#cat("\nFROM: ", origem)  
+#comando = paste("rclone copy ", origem, " YOUR_FOLDER_PATH", sep="")
+#cat("\n", comando)
+#system(comando)
+
+cat("\n Delete Folder")
+setwd(Folder)
+str3 = paste("rm -r ", Folder)
+system(str3)  
+
+#use this only if you update to google drive
+#setwd(diretorios$folderResults)
+#unlink(paste(dataset_name, "-Partition-", id_part, "-results.tar.gz", sep=""),  recursive = TRUE)
 
 gc()
 
