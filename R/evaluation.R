@@ -21,7 +21,6 @@
 # Script 4 - Evaluation                                                                          #
 ##################################################################################################
 
-
 ##################################################################################################
 # Configures the workspace according to the operating system                                     #
 ##################################################################################################
@@ -38,16 +37,19 @@ setwd(FolderRoot)
 FolderScripts = paste(FolderRoot, "/R/", sep="")
 diretorios = directories()
 
+
 ##################################################################################################
-# FUNCTION GATHER PREDICTS HYBRID PARTITIONS                                                     #
+# FUNCTION GATHER PREDICTS PARTITIONS                                                            #
 #   Objective                                                                                    #
 #      From the file "test.pred.arff", separates the real labels and the predicted labels to     # 
 #      generate the confusion matrix to evaluate the partition.                                  #
 #   Parameters                                                                                   #
+#       id_part: number of partition                                                             #
 #       ds: specific dataset information                                                         #
 #       dataset_name: dataset name. It is used to save files.                                    #
 #       number_folds: number of folds created                                                    #
-#       FolderHybrid: path of hybrid partition results                                           #
+#       namesLabels: vector with the names of labels                                             # 
+#       FolderDS: path of partition                                                              #
 #   Return                                                                                       #
 #       true labels and predicts labels                                                          #
 ##################################################################################################
@@ -55,39 +57,41 @@ gather <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderD
   
   retorno = list()
   
+  # get information from bell partitions
   info <- infoPartitions(id_part,dataset_name, FolderDS)
   
   # start build partitions
-  # do fold 1 até o último fold
+  # from fold 1 to the last
   f = 1
   gatherParal <- foreach(f = 1:number_folds) %dopar%{
     
-    # data frame
+    # data frame to save 
     apagar = c(0)
     y_true = data.frame(apagar)
     y_pred = data.frame(apagar)  
     
     cat("\nFold: ", f)
     
+    # specific SPLIT folder
     FolderSplit = paste(FolderDS, "/Partition-", info$numberOfPartition, "/Split-", f, sep="")
     
+    # from group 1 to the last group
     g = 1
     while(g<=info$numberGroupsOfPartition){
       
       cat("\n\tGroup: ", g)
       
+      # specific GROUP folder
       FolderGroup = paste(FolderSplit, "/Group-", g, sep="")
       
       #cat("\nGather y_true ", g, "\n")
       setwd(FolderGroup)
       y_true_gr = data.frame(read.csv("y_true.csv"))
       y_true = cbind(y_true, y_true_gr)
-      #print(nrow(y_true))
       
       #cat("\nGather y_predict ", g, "\n")
       y_pred_gr = data.frame(read.csv("y_predict.csv"))
       y_pred = cbind(y_pred, y_pred_gr)
-      #print(nrow(y_pred))
       
       # deleting files
       unlink("y_true.csv", recursive = TRUE)
@@ -109,6 +113,7 @@ gather <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderD
     gc()
   } # fim do foreach
   
+  # return 
   retorno$id_part = id_part
   retorno$ds = ds
   retorno$dataset_name = dataset_name
@@ -129,38 +134,41 @@ gather <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderD
 
 
 
-
 ##################################################################################################
-# FUNCTION EVALUATION HYBRID PARTITIONS                                                          #
+# FUNCTION EVALUATION PARTITIONS                                                                 #
 #   Objective                                                                                    #
-#      Evaluates the hybrid partitions                                                           #
+#      Evaluates the bell partitions                                                             #
 #   Parameters                                                                                   #
+#       id_part: number of partition                                                             #
 #       ds: specific dataset information                                                         #
 #       dataset_name: dataset name. It is used to save files.                                    #
 #       number_folds: number of folds created                                                    #
-#       FolderHybrid: path of hybrid partition results                                           #
+#       namesLabels: vector with the names of labels                                             # 
+#       FolderDS: path of partition                                                              #
 #   Return                                                                                       #
-#       Assessment measures for each hybrid partition                                            #
+#       Assessment measures for each bell partition                                              #
 ##################################################################################################
 eval <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderDS){
   
   retorno = list()
   
+  # get bell partitions information
   info <- infoPartitions(id_part,dataset_name, FolderDS)
   
-  # from fold = 1 to number_folder
+  # from fold 1 to number_folds
   f = 1
   evalParal <- foreach(f = 1:number_folds) %dopar%{  
     
-    library("mldr")
-    library("utiml")
+      # load libraries
+      library("mldr")
+      library("utiml")
     
-    cat("\nFold: ", f)
+      cat("\nFold: ", f)
     
-    # data frame
-    apagar = c(0)
-    confMatPartitions = data.frame(apagar)
-    partitions = c()
+      # data frame
+      apagar = c(0)
+      confMatPartitions = data.frame(apagar)
+      partitions = c()
     
       # specifyin folder for the fold
       FolderSplit = paste(FolderDS, "/Partition-", info$numberOfPartition, "/Split-", f, sep="")
@@ -198,6 +206,7 @@ eval <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderDS)
     gc()
   } # end folds
   
+  # return
   retorno$id_part = id_part
   retorno$ds = ds
   retorno$dataset_name = dataset_name
@@ -221,10 +230,12 @@ eval <- function(id_part, ds, dataset_name, number_folds, namesLabels, FolderDS)
 #   Objective                                                                                    #
 #       Gather metrics for all folds                                                             #
 #   Parameters                                                                                   #
+#       id_part: number of partition                                                             #
 #       ds: specific dataset information                                                         #
 #       dataset_name: dataset name. It is used to save files.                                    #
 #       number_folds: number of folds created                                                    #
-#       FolderHybrid: path of hybrid partition results                                           #
+#       namesLabels: vector with the names of labels                                             # 
+#       FolderDS: path of partition                                                              #
 #   Return                                                                                       #
 #       Assessment measures for all folds                                                        #
 ##################################################################################################
@@ -233,8 +244,10 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
   
   retorno = list()
   
+  # get bell partitions information
   info <- infoPartitions(id_part,dataset_name, FolderDS)
   
+  # set the partition folder
   FolderPartition = paste(FolderDS, "/Partition-", info$numberOfPartition, sep="")
   
   # vector with names
@@ -249,7 +262,7 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
   folds = c(0)
   nomesFolds = c(0)
   
-  # from fold = 1 to number_folders
+  # from fold 1 to number_folds
   f = 1
   while(f<=number_folds){  
     
@@ -257,6 +270,8 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
     
       # specifying folder for the fold
       FolderSplit = paste(FolderPartition, "/Split-", f, sep="")
+      
+      # get the measures
       setwd(FolderSplit)
       str = paste("Split-", f, "-Evaluated.csv", sep="")
       avaliado = data.frame(read.csv(str))
@@ -264,9 +279,9 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
       avaliado2 = data.frame(avaliado[order(avaliado$medidas, decreasing = FALSE),])
       avaliado3 = data.frame(avaliado2[,-1])
       avaliado4 = cbind(avaliado4, avaliado3)
-      #names(avaliado4)[f+1] = paste("Fold-", f, sep="")
       nomesFolds[f] = paste("Fold-", f, sep="")
       
+      # delete
       setwd(FolderSplit)
       unlink(str)
       
@@ -279,10 +294,12 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
   avaliado4$apagar = measures
   colnames(avaliado4) = c("measures", nomesFolds)
   
+  # save all folds
   setwd(FolderPartition)
   nome3 = paste("Partition-", info$numberOfPartition, "-Evaluated.csv", sep="")
   write.csv(avaliado4, nome3, row.names = FALSE)
   
+  # save mean of 10 folds
   nome4 = paste("Partition-", info$numberOfPartition, "-Sum-Eval.csv", sep="")
   avaliado5 = avaliado4[,-1]
   avaliado6 = data.frame(apply(avaliado5, 1, mean))
@@ -291,6 +308,7 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
   setwd(FolderPartition)
   write.csv(avaliado7, nome4)
   
+  # return
   retorno$id_part = id_part
   retorno$ds = ds
   retorno$dataset_name = dataset_name
@@ -315,6 +333,3 @@ gatherEvaluation <- function(id_part, ds, dataset_name, number_folds,
 # Please, any errors, contact us: elainececiliagatto@gmail.com                                   #
 # Thank you very much!                                                                           #
 ##################################################################################################
-
-
-
