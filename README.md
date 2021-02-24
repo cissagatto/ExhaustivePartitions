@@ -46,7 +46,7 @@ Important: we used the CLUS classifier in this experiment. This implies generati
 # Run
 
 ```
-Rscript exhaustive.R [number_dataset], [number_cores], [number_folds], [id_part]
+Rscript exhaustive.R [number_dataset] [number_cores] [number_folds] [id_part]
 ```
 
 _number_dataset_: dataset number according to file "datasets.csv" in the folder root
