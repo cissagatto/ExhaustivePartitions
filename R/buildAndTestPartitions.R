@@ -188,9 +188,10 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       
       ####################################################################################
       cat("\n\t\tTRAIN: Verify and correct {0} and {1}\n")
-      arquivo = paste(FolderGroup, "/", nomeArTr, sep="")
-      str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", arquivo, sep="")
-      system(str0)
+      #arquivo = paste(FolderGroup, "/", nomeArTr, sep="")
+      str1 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTr, sep="")
+      cat("\n", str1,"\n")
+      system(str1)
       
       ####################################################################################
       cat("\n\t\tTEST: Creating File\n")
@@ -220,8 +221,9 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       
       ####################################################################################
       #cat("\n\t\tTEST: Verify and correct {0} and {1}\n")
-      arquivo = paste(FolderGroup, "/", nomeArTs, sep="")
-      str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", arquivo, sep="")
+      #arquivo = paste(FolderGroup, "/", nomeArTs, sep="")
+      str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTs, sep="")
+      cat("\n", str0,"\n")
       system(str0)
       
       ####################################################################################
