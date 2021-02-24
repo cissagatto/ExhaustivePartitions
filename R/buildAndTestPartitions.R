@@ -48,6 +48,11 @@ diretorios = directories()
 ##################################################################################################
 partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
                       FolderDS, FolderCVTR, FolderCVTS){
+
+  # id_part, ds, dataset_name, number_folds, namesLabels, 
+  #FolderDS = folders$folderExhaustive
+  #FolderCVTR = folders$folderCVTR
+  #FolderCVTS = folders$folderCVTS  
   
   #cat("\n FUNCTION PARTITION \n")
   
@@ -109,9 +114,14 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
     }
     
     ############################################################################################################
-    converteArff <- function(arg1, arg2, arg3){
+    converteArff <- function(arg1, arg2, arg3, FolderUtils){  
       str = paste("java -jar ", FolderUtils, "/R_csv_2_arff.jar ", arg1, " ", arg2, " ", arg3, sep="")
-      system(str)
+      a = system(str)
+      if(as.numeric(a)==0){
+        cat("\nConverted\n")
+      } else {
+        stop()
+      }
       cat("\n\n")  
     }
     
@@ -119,7 +129,6 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
     
     g = 1
     while(g<=info$numberGroupsOfPartition){
-      
       
       ####################################################################################
       library("foreign")
@@ -152,13 +161,14 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       # total de rótulos neste grupo
       totalLabelsThisGr = nrow(specificGroup)
       
+      
       ####################################################################################
       cat("\n\t\tTRAIN: Creating File\n")
       setwd(FolderCVTR)
       nomeTr2 = paste(FolderCVTR, "/", nomeTR, sep="")
       arquivoTR = data.frame(read.csv(nomeTr2))
       atributosTR = arquivoTR[ds$AttStart:ds$AttEnd]
-      rotulosTR = c(specificGroup$labels)
+      #rotulosTR = c(specificGroup$labels)
       classesTR = select(arquivoTR, specificGroup$labels)
       thisGroupTR = cbind(atributosTR, classesTR)
       nrow(thisGroupTR)
@@ -181,17 +191,20 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       ####################################################################################
       #cat("\n\t\tTRAIN: Convert CSV to ARFF\n")
       setwd(FolderGroup)
-      arg1 = nomeCsTr
-      arg2 = nomeArTr
-      arg3 = paste(inicio, "-", fim, sep="")
-      converteArff(arg1, arg2, arg3)
+      arg1Tr = nomeCsTr
+      arg2Tr = nomeArTr
+      arg3Tr = paste(inicio, "-", fim, sep="")
+      converteArff(arg1Tr, arg2Tr, arg3Tr, FolderUtils)
       
       ####################################################################################
-      cat("\n\t\tTRAIN: Verify and correct {0} and {1}\n")
-      #arquivo = paste(FolderGroup, "/", nomeArTr, sep="")
-      str1 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTr, sep="")
-      cat("\n", str1,"\n")
-      system(str1)
+      #arquivo = paste(FolderDS, "/", nomeArTr, sep="")
+      str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTr, sep="")
+      b = system(str0)
+      if(as.numeric(b)==0){
+        cat("\nSed Ok\n")
+      } else {
+        stop()
+      }
       
       ####################################################################################
       cat("\n\t\tTEST: Creating File\n")
@@ -199,8 +212,8 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       nomeTs2 = paste(FolderCVTS, "/", nomeTS, sep="")
       arquivoTS = data.frame(read.csv(nomeTs2))
       atributosTS = arquivoTS[ds$AttStart:ds$AttEnd]
-      rotulosTS = c(specificGroup$labels)
-      classesTS = select(arquivoTS, rotulosTS)
+      #rotulosTS = specificGroup$labels
+      classesTS = select(arquivoTS, specificGroup$labels)
       thisGroupTS = cbind(atributosTS, classesTS)
       nrow(thisGroupTS)
       
@@ -211,20 +224,23 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       setwd(FolderGroup)
       write.csv(thisGroupTS, nomeCsTs, row.names = FALSE)
       
+      
       ####################################################################################
       #cat("\n\t\tTEST: Convert CSV to ARFF\n")
       setwd(FolderGroup)
-      arg1 = nomeCsTs
-      arg2 = nomeArTs
-      arg3 = paste(inicio, "-", fim, sep="")
-      converteArff(arg1, arg2, arg3)
+      arg1Ts = nomeCsTs
+      arg2Ts = nomeArTs
+      arg3Ts = paste(inicio, "-", fim, sep="")
+      converteArff(arg1Ts, arg2Ts, arg3Ts, FolderUtils)
       
       ####################################################################################
-      #cat("\n\t\tTEST: Verify and correct {0} and {1}\n")
-      #arquivo = paste(FolderGroup, "/", nomeArTs, sep="")
-      str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTs, sep="")
-      cat("\n", str0,"\n")
-      system(str0)
+      str1 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTs, sep="")
+      d = system(str1)
+      if(as.numeric(d)==0){
+        cat("\nSed Ok\n")
+      } else {
+        stop()
+      }
       
       ####################################################################################
       #cat("\n\t\tCreating .s file for Clus")
@@ -275,7 +291,12 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       nome_config2 = paste(FolderGroup, "/", nome_config, sep="")
       setwd(FolderGroup)      
       str = paste("java -jar ", FolderUtils, "/Clus.jar ", nome_config2, sep="")
-      system(str)
+      e = system(str)
+      if(as.numeric(e)==0){
+        cat("\nClus Ok\n")
+      } else {
+        stop()
+      }
       
       ####################################################################################
       #cat("\n\t\tOpen inicioFimRotulos.csv\n")

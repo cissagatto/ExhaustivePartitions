@@ -69,7 +69,7 @@ diretorios <- directories()
 ##################################################################################################
 setwd(FolderRoot)
 datasets <- data.frame(read.csv("datasets.csv"))
-n = nrow(datasets)
+n_dataset = nrow(datasets)
 
 
 ##################################################################################################
@@ -167,7 +167,7 @@ while(id_part<=n){
   system(str3)
   
   setwd(diretorios$folderResults)
-  unlink(paste(dataset_name, "-Partition-", id_part, "-results.tar.gz", sep=""))
+  unlink(paste(dataset_name, "-Partition-", id_part, "-results.tar.gz", sep=""),  recursive = TRUE)
   
   id_part = id_part + 1
   

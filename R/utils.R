@@ -297,12 +297,10 @@ directoriesDataset<- function(dataset_name){
 #     Return:                                                                                    #
 #        The arff file in the specific folder                                                    #
 ##################################################################################################
-converteArff <- function(arg1, arg2, arg3){  
-  diretorios = directories()
-  str = paste("java -jar ", diretorios$folderUtils, "/R_csv_2_arff.jar ", arg1, " ", arg2, " ", arg3, sep="")
-  cat("\n")  
+converteArff <- function(arg1, arg2, arg3, FolderUtils){  
+  str = paste("java -jar ", FolderUtils, "/R_csv_2_arff.jar ", arg1, " ", arg2, " ", arg3, sep="")
   print(system(str))
-  cat("\n")  
+  cat("\n\n")  
 }
 
 
