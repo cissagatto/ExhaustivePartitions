@@ -57,12 +57,15 @@ _number_folds_: number of folds to cross-validation
 
 _id_part_: you will find this information in "/BellPartitions/[dataset]/". The file used here is "[dataset_name]-groupsPerPartitions.csv". Example, the file flags-groupsPerPartitions.csv will appear like
 
+| ------- | ----------- |
 | part, | totalGroups |
+| ------- | ----------- |
 | 1,| 1 | 
 | 2,| 2 | 
 | 3,| 2 | 
 | ...,| ... | 
 | P,| G | 
+| ------- | ----------- |
 
 
 Example:
