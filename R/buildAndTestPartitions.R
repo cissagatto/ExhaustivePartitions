@@ -21,10 +21,6 @@
 # Script 3 - Build and Test Bell Partitions                                                      #
 ##################################################################################################
 
-
-##################################################################################################
-# Configures the workspace according to the operating system                                     #
-##################################################################################################
 ##################################################################################################
 # Configures the workspace according to the operating system                                     #
 ##################################################################################################
@@ -42,37 +38,39 @@ FolderScripts = paste(FolderRoot, "/R/", sep="")
 diretorios = directories()
 
 
-
 ##################################################################################################
-#                                                                               
+# FUNCTION PARTITION c                                                                           #
+#  Objective                                                                                     #
+#     Build and Test the partition                                                               #
+#  Parameters                                                                                    #
+#     id_part: the id of the partition                                                           #
+#     ds: information dataset                                                                    #
+#     dataset_name: the name of the dataset                                                      #
+#     number_folds: X-Folds cross-validation                                                     #
+#     namesLabels: vector with the name of labels this dataset                                   #
+#     FolderDS: the folder of the specific dataset                                               #
+#     FolderCVTR: train folder                                                                   #
+#     FolderCVTS: test folder                                                                    # 
+#  Return                                                                                        #
+#
+#                                                                                                #
 ##################################################################################################
 partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
                       FolderDS, FolderCVTR, FolderCVTS){
 
-  # id_part, ds, dataset_name, number_folds, namesLabels, 
-  #FolderDS = folders$folderExhaustive
-  #FolderCVTR = folders$folderCVTR
-  #FolderCVTS = folders$folderCVTS  
-  
-  #cat("\n FUNCTION PARTITION \n")
-  
   retorno = list()
-  
-  #cat("\n\tTet info partitions:\n")
+
+  # get information about the bell partitions
   info <- infoPartitions(id_part,dataset_name, FolderDS)
-  #print(info)
   
-  # criando a pasta específica da partição
+  # create specific folder for partition
   FolderPartition = paste(FolderDS, "/Partition-", info$numberOfPartition, sep="")
-  #cat("\n\tFolder: ", FolderPartition, "\n")
-  
   if(dir.exists(FolderPartition)==FALSE){
-    #cat("\ncriando a pasta")
     dir.create(FolderPartition)
   }
   
   # start build partitions
-  # do fold 1 até o último fold
+  # from fold 1 to last fold
   f = 1
   buildBellPartitions <- foreach(f = 1:number_folds) %dopar% {
     
@@ -101,6 +99,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
     }
     
     ############################################################################################################
+    # configuring folders
     FolderUtils = paste(FolderRoot, "/utils", sep="")
     FolderScripts = paste(FolderRoot, "/R/", sep="")
     setwd(FolderScripts)
@@ -108,12 +107,14 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
     diretorios = directories()
     
     ############################################################################################################
+    # configuring folders
     FolderSplit = paste(FolderPartition, "/Split-", f, sep="")
     if(dir.exists(FolderSplit)==FALSE){
       dir.create(FolderSplit)
     }
     
     ############################################################################################################
+    # convert csv to arff
     converteArff <- function(arg1, arg2, arg3, FolderUtils){  
       str = paste("java -jar ", FolderUtils, "/R_csv_2_arff.jar ", arg1, " ", arg2, " ", arg3, sep="")
       a = system(str)
@@ -125,15 +126,19 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       cat("\n\n")  
     }
     
+    # get information bell partitions
     info = infoPartitions(id_part,dataset_name, FolderDS)
     
+    # from group 1 to last group of partition
     g = 1
     while(g<=info$numberGroupsOfPartition){
       
       ####################################################################################
       library("foreign")
       
+      
       ####################################################################################
+      # configuring names to use
       nome_particao = paste("partition_", info$numberOfPartition, sep="")
       nome_grupo = paste("group_", g, sep="")
       cat("\n\tPartition: ", nome_particao)
@@ -141,15 +146,19 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       
       
       ####################################################################################
+      # configuring names for train and test files originals
       nomeTR = paste(dataset_name, "-Split-Tr-", f, ".csv", sep="")
       nomeTS = paste(dataset_name, "-Split-Ts-", f, ".csv", sep="")
       
+      
       ####################################################################################
+      # create folder to specific group
       nome_grupo_2 = paste("Group-", g, sep="")
       FolderGroup = paste(FolderSplit , "/", nome_grupo_2, sep="")
       if(dir.exists(FolderGroup)==FALSE){
         dir.create(FolderGroup)  
       } 
+      
       
       ####################################################################################
       # get the labels of this group
@@ -158,7 +167,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       
       
       ####################################################################################
-      # total de rótulos neste grupo
+      # total label in this group
       totalLabelsThisGr = nrow(specificGroup)
       
       
@@ -168,7 +177,6 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       nomeTr2 = paste(FolderCVTR, "/", nomeTR, sep="")
       arquivoTR = data.frame(read.csv(nomeTr2))
       atributosTR = arquivoTR[ds$AttStart:ds$AttEnd]
-      #rotulosTR = c(specificGroup$labels)
       classesTR = select(arquivoTR, specificGroup$labels)
       thisGroupTR = cbind(atributosTR, classesTR)
       nrow(thisGroupTR)
@@ -197,7 +205,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       converteArff(arg1Tr, arg2Tr, arg3Tr, FolderUtils)
       
       ####################################################################################
-      #arquivo = paste(FolderDS, "/", nomeArTr, sep="")
+      # verifying the arff file
       str0 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTr, sep="")
       b = system(str0)
       if(as.numeric(b)==0){
@@ -212,7 +220,6 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       nomeTs2 = paste(FolderCVTS, "/", nomeTS, sep="")
       arquivoTS = data.frame(read.csv(nomeTs2))
       atributosTS = arquivoTS[ds$AttStart:ds$AttEnd]
-      #rotulosTS = specificGroup$labels
       classesTS = select(arquivoTS, specificGroup$labels)
       thisGroupTS = cbind(atributosTS, classesTS)
       nrow(thisGroupTS)
@@ -234,6 +241,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       converteArff(arg1Ts, arg2Ts, arg3Ts, FolderUtils)
       
       ####################################################################################
+      # verifying the arff file
       str1 = paste("sed -i 's/{0}/{0,1}/g;s/{1}/{0,1}/g' ", nomeArTs, sep="")
       d = system(str1)
       if(as.numeric(d)==0){
@@ -250,7 +258,6 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       sink(nome_config, type = "output")
       
       cat("[General]")          
-      #cat("\nVerbose = 10")
       cat("\nCompatibility = MLJ08")
       
       cat("\n")
@@ -307,15 +314,6 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
       setwd(FolderGroup)
       library("foreign")
       namae2 = paste(FolderGroup, "/grupo_", g, ".test.pred.arff", sep="")
-      
-      #if(file.exists(namae2)==TRUE){
-      #  print(namae2)
-      #  cat("\nexist")
-      #} else {
-      #  print(namae2)
-      #  cat("\ndont exist")
-      #}
-      
       predicoes = data.frame(read.arff(namae2))
       
       ####################################################################################
@@ -367,7 +365,8 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
         n_r = length(rotulos)
         nomeColuna = c()
         
-        t = 1 
+        # correct the labels
+        t = 1
         while(t <= n_r){
           nomeColuna[t] = paste("Pruned.p.", rotulos[t], sep="")
           t = t + 1
@@ -382,6 +381,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
         gc()
       } # FIM DO ELSE
       
+      # delete files
       nome1 = paste("grupo_Tr_", g, ".arff", sep="")
       nome2 = paste("grupo_Ts_", g, ".arff", sep="")
       nome3 = paste("grupo_Tr_", g, ".csv", sep="")
@@ -405,6 +405,7 @@ partition <- function(id_part, ds, dataset_name, number_folds, namesLabels,
     gc()
   }
   
+  # return
   retorno$id_part = id_part
   retorno$ds = ds
   retorno$dataset_name = dataset_name
