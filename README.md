@@ -22,5 +22,65 @@ This code is executed in 10-fold cross-validation (mandatory!). First, you have 
 ### Step-2
 After obtained the 10-Fold Cross-Validation and put in the correct folder, you need the Bell Partitions. The code to generated the Bell Partitions is available here https://github.com/cissagatto/BellPartitionsMultiLabel. Please, follow the instructions in GitHub. After generated the bell partitions, put them in the "BellPartitions" folder. The folder structure is maintained.
 
+### Step-3
+Confirms if the folder UTILS contains the following files: Clus.jar, R_csv_2_arff.jar and weka.jar. Without these jars the code not runs. 
+
+### Folder Path
+Place a copy of this code in _"C:/Users/[username]/BellPartitionsMultiLabel"_ or _"/home/username/BellPartitionsMultiLabel"_. Our files are configured to obtain the paths of the folders from the root. You can change this in the code if you want.
+
+### File "datasets.csv"
+A file called "datasets.csv" must be in the *datasets* folder. This file is used to read informations about the datasets and they are used in the code. All 74 datasets available in cometa are in this file. If you want to use another dataset, please, add the following information about the dataset in the file:
+
+_Id, Name, Domain, Labels, Instances, Attributes, Inputs, Labelsets, Single, Max freq, Card, Dens, MeanIR, Scumble, TCS, AttStart, AttEnd, LabelStart, LabelEnd_
+
+The _"Id"_ of the dataset is a mandatory parameter (_n_dataset_) in the command line to run all code. The "LabelStart" and "LabelEnd" are used in a lot of internal functions. Please, make sure that these information are available before run the code.
+
+## Software Requirements
+This code was develop in R Studio Version 1.3.959 © 2009-2020, PBC, "Middlemist Red" (3a09be39, 2020-05-18) for Windows. The R language version was 4.0.1 (2020-06-06) with x86_64-w64-mingw32 plataform. Please make sure all the dependencies are installed (verify libraries.R). This code does not provide an installation of libraries.
+
+## Hardware Requirements
+This code may or may not be executed in parallel, however, it is highly recommended that you run it in parallel. The number of cores can be configured via the command line (_number_cores_). If *number_cores = 1* the code will run sequentially. In our experiments, we used ten cores. For reproducibility, we recommend that you also use ten cores.
+
+Important: we used the CLUS classifier in this experiment. This implies generating all physical ARFF training, validating and testing files for each of the generated hybrid partitions. Our code generates the partitions first in memory and then saves them to the HD. However, to avoid memory problems, immediately after saving to HD, the files are validated (or tested) and then deleted. Even so, make sure you have enough space on your HD and RAM for this procedure.
+
+# Run
+
+```
+Rscript exhaustive.R [number_dataset, number_cores, number_folds, id_part]
+```
+
+Example:
+
+```
+Rscript exhaustive.R 24 10 10 3
+```
+
+## Acknowledgment
+This study is financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) - Finance Code 001
+
+## Links
+
+[Post Graduate Program in Computer Science](http://ppgcc.dc.ufscar.br/pt-br)
+
+[Biomal](http://www.biomal.ufscar.br/)
+
+[Computer Department](https://site.dc.ufscar.br/)
+
+[CAPES](https://www.gov.br/capes/pt-br)
+
+[Embarcados](https://www.embarcados.com.br/author/cissa/)
+
+[Linkedin](https://www.linkedin.com/in/elainececiliagatto/)
+
+[Linkedin](https://www.linkedin.com/company/27241216)
+
+[Instagram](https://www.instagram.com/professoracissa/)
+
+[Facebook](https://www.facebook.com/ProfessoraCissa/)
+
+[Twitter](https://twitter.com/professoracissa)
+
+# Thanks
+
 
 
