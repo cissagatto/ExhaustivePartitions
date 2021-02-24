@@ -46,7 +46,7 @@ Important: we used the CLUS classifier in this experiment. This implies generati
 # Run
 
 ```
-Rscript exhaustive.R [number_dataset, number_cores, number_folds, id_part]
+Rscript exhaustive.R [number_dataset], [number_cores], [number_folds], [id_part]
 ```
 
 _number_dataset_: dataset number according to file "datasets.csv" in the folder root
@@ -63,7 +63,8 @@ _id_part_: you will find this information in "/BellPartitions/[dataset]/". The f
 | 2 | 2 | 
 | 3 | 2 | 
 | | | 
-| P | G | 
+| Partition | Groups | 
+
 
 Example:
 
@@ -71,7 +72,7 @@ Example:
 Rscript exhaustive.R 24 10 10 3
 ```
 
-This will compute all possibile parttions for dataset Flags, using 10 cores and 10-folds for cross-validation to process the partition 3.
+This will compute all possibile parttions for dataset Flags, using 10 cores and 10-folds for cross-validation to process the partition 3. If you want, you can modified the exhaustive.R to use a LOOP for compute all partitions. You also can modified the code to upload the results into your googledrive using rclone. Please, check the comments in the script.
 
 
 ## Acknowledgment
