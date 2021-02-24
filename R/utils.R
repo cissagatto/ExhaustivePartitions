@@ -21,10 +21,6 @@
 # Script 2 - Utils
 ##################################################################################################
 
-
-##################################################################################################
-# Configures the workspace according to the operating system                                     #
-##################################################################################################
 ##################################################################################################
 # Configures the workspace according to the operating system                                     #
 ##################################################################################################
@@ -156,11 +152,10 @@ directories <- function(){
 }
 
 
-
 ##################################################################################################
-# FUNCTION CREATING FOLDER PRINCIPALS                                                            #
+# FUNCTION CREATING DIRECTORIES DATASET                                                          #
 #   Objective                                                                                    #
-#       Creates the specific folders for the specific dataset                                    #
+#       Creates the folders for the specific dataset                                             #
 #   Parameters                                                                                   #
 #       dataset_name: dataset name. It is used to create the folders.                            #
 #   Return:                                                                                      #
@@ -172,6 +167,7 @@ directoriesDataset<- function(dataset_name){
   
   retorno = list()
   
+  # Folds Folder
   folderFolds = paste(diretorios$folderFolds, "/", dataset_name, sep="")
   if(dir.exists(folderFolds) == TRUE){
     setwd(folderFolds)
@@ -184,6 +180,7 @@ directoriesDataset<- function(dataset_name){
     n_Folds = length(dir_Folds)
   }
   
+  # Results Folder
   folderDataset = paste(diretorios$folderResults, "/", dataset_name, sep="")
   if(dir.exists(folderDataset) == TRUE){
     setwd(folderDataset)
@@ -196,18 +193,7 @@ directoriesDataset<- function(dataset_name){
     n_Dataset = length(dir_Dataset)
   }
   
-  #folderReports = paste(folderDataset, "/Reports", sep="")
-  #if(dir.exists(folderReports) == TRUE){
-  #  setwd(folderReports)
-  #  dir_Reports = dir(folderReports)
-  #  n_Reports = length(dir_Reports)
-  #} else {
-  #  dir.create(folderReports)
-  #  setwd(folderReports)
-  #  dir_Reports = dir(folderReports)
-  #  n_Reports = length(dir_Reports)
-  #}
-  
+  # Cross-Validation Folder
   folderCV = paste(folderFolds, "/CrossValidation/", sep="")
   if(dir.exists(folderCV) == TRUE){
     setwd(folderCV)
@@ -220,6 +206,7 @@ directoriesDataset<- function(dataset_name){
     n_folderCV = length(dir_folderCV)
   }
   
+  # Cross-Validation Train Folder
   folderCVTR = paste(folderFolds, "/CrossValidation/Tr", sep="")
   if(dir.exists(folderCVTR) == TRUE){
     setwd(folderCVTR)
@@ -232,6 +219,7 @@ directoriesDataset<- function(dataset_name){
     n_folderCVTR = length(dir_folderCVTR)
   }
   
+  # Cross-Validation Test Folder
   folderCVTS = paste(folderFolds, "/CrossValidation/Ts", sep="")
   if(dir.exists(folderCVTS) == TRUE){
     setwd(folderCVTS)
@@ -244,6 +232,7 @@ directoriesDataset<- function(dataset_name){
     n_folderCVTS = length(dir_folderCVTS)
   }
   
+  # Exhaustive Folder
   folderExhaustive = paste(folderDataset, "/Exhaustive", sep="")
   if(dir.exists(folderExhaustive) == TRUE){
     setwd(folderExhaustive)
@@ -258,7 +247,6 @@ directoriesDataset<- function(dataset_name){
   
   retorno$folderFolds = folderFolds
   retorno$folderDataset = folderDataset
-  #retorno$folderReports = folderReports
   retorno$folderExhaustive = folderExhaustive
   retorno$folderCV = folderCV
   retorno$folderCVTR = folderCVTR
@@ -266,7 +254,6 @@ directoriesDataset<- function(dataset_name){
   
   retorno$dir_Folds = dir_Folds
   retorno$dir_Dataset = dir_Dataset
-  #retorno$dir_Reports = dir_Reports
   retorno$dir_Exhaustive = dir_Exhaustive
   retorno$dir_folderCV = dir_folderCV
   retorno$dir_folderCVTR = dir_folderCVTR
@@ -274,7 +261,6 @@ directoriesDataset<- function(dataset_name){
   
   retorno$n_Folds = n_Folds
   retorno$n_Dataset = n_Dataset
-  #retorno$n_Reports = n_Reports
   retorno$n_Exhaustive = n_Exhaustive
   retorno$n_folderCV = n_folderCV
   retorno$n_folderCVTS = n_folderCVTR
@@ -304,15 +290,14 @@ converteArff <- function(arg1, arg2, arg3, FolderUtils){
 }
 
 
-
 ##################################################################################################
-# FUNCTION INFO DATA SET                                                                         #
+# FUNCTION INFO DATASET                                                                          #
 #  Objective                                                                                     #
-#     Gets the information that is in the "datasets.csv" file.                                    #  
+#     Gets the information that is in the "datasets.csv" file.                                   #  
 #  Parameters                                                                                    #
 #     dataset: the specific dataset                                                              #
 #  Return                                                                                        #
-#     Everything in the spreadsheet                                                              #
+#     Everything in the "datasets.csv" file                                                      #
 ##################################################################################################
 infoDataSet <- function(dataset){
   retorno = list()
@@ -339,38 +324,52 @@ infoDataSet <- function(dataset){
   gc()
 }
 
-infoPartitions <- function(id_part,dataset_name,FolderDS){
+
+##################################################################################################
+# FUNCTION INFO PARTITIONS                                                                       #
+#  Objective                                                                                     #
+#     Get information from the bell partitions file                                              #
+#  Parameters                                                                                    #
+#     id_part: the id of the partition                                                           # 
+#     dataset_name: the name of the dataset                                                      #
+#     FolderDS: the folder of the specific dataset                                               #
+#  Return                                                                                        #
+#     Everything in the "[dataset_name]-groupsPerPartitions.csv" file                            #
+#                                                                                                #
+##################################################################################################
+infoPartitions <- function(id_part, dataset_name, FolderDS){
   
   retorno = list()
   
-  # setando o diretório específico
+  # set specific directory
   diretorios = directories()
   FolderBP = paste(diretorios$folderBellPart, "/", dataset_name, sep="")
   
-  # obtendo a lista de partições
+  # get list of partitions
   setwd(FolderBP)
   nome = paste(dataset_name, "-partitions.csv", sep="")
   bell = data.frame(read.csv(nome))
   
-  # obtendo o total de grupos por cada partição
+  # get the total groups per partition
   nome2 = paste(dataset_name, "-groupsPerPartitions.csv", sep="")
   groupsPerPartitions = data.frame(read.csv(nome2))
   
-  # obtendo o formato da partição
+  # get format of partition
   specificPartition = bell %>% filter(., bell$part == id_part)
   
-  # obtendo o total de grupos da partição
+  # get total groups of the specific partition
   groupSecificPartition = groupsPerPartitions %>% filter(., groupsPerPartitions$part == id_part)
   
-  # obtendo o número da partição
+  # get the number of partition
   numeroDaParticao = groupSecificPartition$part
   
-  # obtendo o número de grupos da partição
+  # get the number of groups of the specific partitin
   numeroDeGruposDaParticao = groupSecificPartition$totalGroups
   
-  # criando a pasta específica da partição
+  # create specific folder for partition
   FolderPartition = paste(FolderDS, "/Partition-", numeroDaParticao, sep="")
   
+  #return
   retorno$FolderBP = FolderBP
   retorno$bell = bell
   retorno$groupsPerPartitions = groupsPerPartitions 
