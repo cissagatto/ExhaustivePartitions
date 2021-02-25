@@ -1,5 +1,5 @@
 # ExhaustivePartitions
-This code is part of my doctoral research. It's exhaustive experimentation of Bell Partitions.
+This code is part of my doctoral research. It's exhaustive experimentation of Bell Partitions. Important, this code will execute on Windows and Linux. If want, there is another version optimized for Linux, i.e., the code will use /dev/shm to minimizing the use of I/O. Chere here to access:
 
 ## Scripts
 This source code consists of an R project for R Studio and the following R scripts:
@@ -46,7 +46,7 @@ Important: we used the CLUS classifier in this experiment. This implies generati
 # Run
 
 ```
-Rscript exhaustive.R [number_dataset] [number_cores] [number_folds] [id_part]
+Rscript exhaustive.R [number_dataset] [number_cores] [number_folds]
 ```
 
 _number_dataset_: dataset number according to file "datasets.csv" in the folder root
@@ -55,24 +55,14 @@ _number_cores_: cores to parallel
 
 _number_folds_: number of folds to cross-validation
 
-_id_part_: you will find this information in "/BellPartitions/[dataset]/". The file used here is "[dataset_name]-groupsPerPartitions.csv". For example, the file flags-groupsPerPartitions.csv will appear like
-
-| part | totalGroups |
-| ------- | ----------- |
-| 1 | 1 | 
-| 2 | 2 | 
-| 3 | 2 | 
-| | | 
-| Partition | Groups | 
-
 
 Example:
 
 ```
-Rscript exhaustive.R 24 10 10 3
+Rscript exhaustive.R 24 10 10
 ```
 
-This will compute all possible partitions for dataset Flags, using 10 cores and 10-folds for cross-validation to process partition 3. If you want, you can modify the "exhaustive.R" to use a LOOP for computing all partitions. You also can modify the code to upload the results into your google drive using rclone. Please, check the comments in the script.
+This will compute all partitions for dataset Flags, using 10 cores and 10-folds for cross-validation. If you want, you can modify the "exhaustive.R" to excute the only for one partition. You also can modify the code to upload the results into your google drive using rclone. Please, check the comments in the script.
 
 
 ## Acknowledgment
