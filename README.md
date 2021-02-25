@@ -1,5 +1,5 @@
 # ExhaustivePartitions
-This code is part of my doctoral research. It's exhaustive experimentation of Bell Partitions. Important, this code will execute on Windows and Linux. If want, there is another version optimized for Linux, i.e., the code will use /dev/shm to minimizing the use of I/O. Chere here to access:
+This code is part of my doctoral research. It's exhaustive experimentation of Bell Partitions. Important, this code will execute on Windows and Linux. If want, there is another version optimized for Linux, i.e., the code will use /dev/shm to minimizing the use of I/O: https://github.com/cissagatto/ExhasutiveSHM
 
 ## Scripts
 This source code consists of an R project for R Studio and the following R scripts:
