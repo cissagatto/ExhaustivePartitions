@@ -62,7 +62,7 @@ Example:
 Rscript exhaustive.R 24 10 10
 ```
 
-This will compute all partitions for dataset Flags, using 10 cores and 10-folds for cross-validation. If you want, you can modify the "exhaustive.R" to excute the only for one partition. You also can modify the code to upload the results into your google drive using rclone. Please, check the comments in the script.
+This will compute all partitions for dataset Flags, using 10 cores and 10-folds for cross-validation. If you want, you can modify the "exhaustive.R" to execute only for one partition. You also can modify the code to upload the results into your google drive using rclone. Please, check the comments in the script.
 
 
 ## Acknowledgment
